@@ -30,7 +30,7 @@ export default function MetaMaskCard() {
   const ENSNames = useENSNames(provider);
 
   useEffect(() => {
-    console.log(chainId);
+    console.log(chainId, isActive);
     if (isActive) {
       if (chainId === 137) {
         setIsPolygonNetwork(true);
@@ -38,8 +38,16 @@ export default function MetaMaskCard() {
         setIsPolygonNetwork(false);
       }
     }
-  }, [chainId]);
+  }, [chainId, isActive]);
 
+  useEffect(() => {
+    console.log('1234', isActive)
+    const isConnected = JSON.parse(localStorage?.getItem('isWalletConnected'));
+    if (!isConnected) {
+      metaMask.deactivate();
+    }
+  },[isActive])
+  console.log(isActive, 'isActive');
   return (
     <>
       <h4 style={{ background: '#fab005', color: '#fff' }}>

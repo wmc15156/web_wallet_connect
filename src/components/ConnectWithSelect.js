@@ -1,7 +1,7 @@
 
 import { Network } from '@web3-react/network';
 import { WalletConnect } from '@web3-react/walletconnect';
-import { useCallback, useState } from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import { CHAINS, getAddChainParameters, URLS } from '../chains';
 
 function Select({
@@ -41,9 +41,29 @@ export function ConnectWithSelect({
     Number(chainId)
   );
 
+
+  const disconnectWallet = () => {
+      localStorage.setItem('isWalletConnected', "false")
+      connector.deactivate();
+  }
+  const walletConnect = async () => {
+      await connector.activate(
+          desiredChainId === -1 ? undefined : getAddChainParameters(desiredChainId)
+      ).then(() => {
+          localStorage.setItem('isWalletConnected', "true")
+      })
+  }
+
+  const walletConnect2 = async () => {
+      await connector.activate(desiredChainId === -1 ? undefined : desiredChainId).then(() => {
+          localStorage.setItem('isWalletConnected', "true")
+      })
+  }
+
+
   const [desiredChainId, setDesiredChainId] = useState(isNetwork ? 1 : -1);
 
-  const switchChain = useCallback(
+    const switchChain = useCallback(
     async (desiredChainId) => {
       setDesiredChainId(desiredChainId);
       // if we're already connected to the desired chain, return
@@ -52,15 +72,15 @@ export function ConnectWithSelect({
       if (desiredChainId === -1 && chainId !== undefined) return;
 
       if (connector instanceof WalletConnect || connector instanceof Network) {
-        await connector.activate(desiredChainId === -1 ? undefined : desiredChainId);
+        await walletConnect2();
       } else {
-        await connector.activate(
-          desiredChainId === -1 ? undefined : getAddChainParameters(desiredChainId)
-        );
+        await walletConnect();
       }
     },
     [connector, chainId]
   );
+
+
 
   if (error) {
     return (
@@ -95,18 +115,12 @@ export function ConnectWithSelect({
         {/*  chainIds={chainIds}*/}
         {/*/>*/}
         <div style={{ marginBottom: '1rem' }} />
-        <button onClick={() => connector.deactivate()}>Disconnect</button>
+        <button onClick={disconnectWallet}>Disconnect</button>
       </div>
     );
   } else {
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {/*<Select*/}
-        {/*  chainId={desiredChainId}*/}
-        {/*  switchChain={isActivating ? undefined : switchChain}*/}
-        {/*  displayDefault={displayDefault}*/}
-        {/*  chainIds={chainIds}*/}
-        {/*/>*/}
         <div style={{ marginBottom: '1rem' }} />
         <button
           onClick={
@@ -114,10 +128,8 @@ export function ConnectWithSelect({
               ? undefined
               : () =>
                   connector instanceof WalletConnect || connector instanceof Network
-                    ? connector.activate(desiredChainId === -1 ? undefined : desiredChainId)
-                    : connector.activate(
-                        desiredChainId === -1 ? undefined : getAddChainParameters(desiredChainId)
-                      )
+                    ? walletConnect2()
+                    : walletConnect()
           }
           disabled={isActivating}
         >

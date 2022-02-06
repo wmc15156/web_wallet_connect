@@ -28,6 +28,9 @@ function isExtendedChainInformation(
 }
 
 export function getAddChainParameters(chainId) {
+
+  console.log('test connect');
+
   const chainInformation = CHAINS[chainId]
   if (isExtendedChainInformation(chainInformation)) {
     return {
@@ -38,6 +41,8 @@ export function getAddChainParameters(chainId) {
       blockExplorerUrls: chainInformation.blockExplorerUrls,
     }
   } else {
+    console.log('test connect2');
+
     return chainId
   }
 }

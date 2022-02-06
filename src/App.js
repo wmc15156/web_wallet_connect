@@ -31,7 +31,12 @@ function App() {
     };
 
     useEffect(() => {
+        if(!window.chrome) {
+            alert("Please use a chrome browser.")
+        }
+        console.log(window.chrome, 'isChrome')
         checkWalletIsConnected();
+
     }, []);
 
 
