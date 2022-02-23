@@ -1,31 +1,67 @@
 import logo from "./logo.svg";
 import "./App.css";
-import { ethers } from "ethers";
+import { ethers, getDefaultProvider } from "ethers";
 
 import PriorityExample from "../src/components/connectors/PriorityExample";
 import MetaMaskCard from "../src/components/connectors/MetaMaskCard";
 import { useCallback, useEffect, useState } from "react";
-import { createContractInstance } from "./lib/Station";
 import ABI from "./lib/abi/contract.json";
-import web3 from "web3";
-import { convertBNToString, convertEthToWei } from "./lib/convert";
+import Web3 from "web3";
+import { convertEthToWei } from "./lib/convert";
+import AvastarToken from "./space_punks_token";
+import axios from "axios";
 
 function App() {
+  const [inputAddress, setInputAddress] = useState("");
   const [currentAccount, setCurrentAccount] = useState(null);
   const [contract, setContract] = useState(null);
   const [allowance, setAllowance] = useState(null);
+  const [nftImages, setNftImages] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
   // const result = createContractInstance();
   // console.log(result);
 
   const [coinCount, setCoinCount] = useState("");
 
   // const nftContract = new web3.eth.Contract(ABI, address);
+  const { ethereum } = window;
+  const web3 = new Web3(window.ethereum);
+
+  const getNftListImages = async () => {
+    const contract = new web3.eth.Contract(
+      AvastarToken,
+      "0xF3E778F839934fC819cFA1040AabaCeCBA01e049"
+    );
+    const balance = await contract.methods.balanceOf(inputAddress).call();
+    console.log(balance);
+
+    let images = [];
+    setLoading(true);
+    for (let i = 0; i < balance; i++) {
+      const tokenId = await contract.methods
+        .tokenOfOwnerByIndex(inputAddress, i)
+        .call();
+      console.log(tokenId, "tokenId");
+      const tokenMetadataURI = await contract.methods.tokenURI(tokenId).call();
+      // console.log(tokenMetadataURI);
+      const metadataImage = await axios.get(tokenMetadataURI).then((resp) => {
+        return resp.data.image;
+      });
+
+      images.push(metadataImage);
+    }
+    setLoading(false);
+
+    setNftImages(images);
+  };
 
   const bootstrap = async () => {
     const providerUrl =
       process.env.PROVIDER_URL ||
       "https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
-    const { ethereum } = window;
+
     try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
@@ -47,14 +83,15 @@ function App() {
     if (coinCount && contract) {
       console.log(coinCount, convertEthToWei(coinCount));
       await contract.approve(currentAccount, convertEthToWei(coinCount));
-      const balance = await contract.allowance(currentAccount, currentAccount);
-      setAllowance(balance);
-      console.log(
-        balance,
-        "balance",
-        web3.utils.isBN(balance._hex),
-        balance._hex
-      );
+      try {
+        const balance = await contract.allowance(
+          currentAccount,
+          currentAccount
+        );
+        setAllowance(balance);
+      } catch (err) {
+        console.log(err, "approve aerror");
+      }
     }
   }, [coinCount, currentAccount, contract]);
 
@@ -78,6 +115,8 @@ function App() {
       window.location.href = "https://metamask.io/";
     }
   };
+
+  console.log(nftImages, "nftimages");
 
   useEffect(() => {
     if (!window.chrome) {
@@ -118,6 +157,40 @@ function App() {
 
           <div style={{ margin: "20px 0 0 30px" }}>
             {allowance && <div>{allowance._hex}</div>}
+          </div>
+        </div>
+
+        <div style={{ marginTop: "20px", padding: "20px" }}>
+          <hr />
+
+          <h3 style={{ textAlign: "center" }}> get nft item lists test </h3>
+          <span>test address: 0x9956923aa07796d66d5d88d185d92f8b84a17cae</span>
+          <div style={{ marginTop: "30px" }}>
+            <input
+              type="text"
+              value={inputAddress}
+              placeholder="address"
+              onChange={(e) => {
+                setInputAddress(e.target.value);
+              }}
+            />
+            <button onClick={getNftListImages}>submit</button>
+          </div>
+
+          <div style={{ marginTop: "30px" }}>
+            {loading && <span>loading......</span>}
+            {nftImages.map((image, i) => (
+              <img
+                src={image}
+                alt=""
+                key={i}
+                style={{ display: "block", width: "100px" }}
+              />
+            ))}
+          </div>
+
+          <div style={{ marginTop: "30px", fontSize: "12px" }}>
+            contract address: 0xF3E778F839934fC819cFA1040AabaCeCBA01e049
           </div>
         </div>
       </div>
