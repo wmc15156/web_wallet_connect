@@ -10,6 +10,17 @@ import Web3 from "web3";
 import { convertEthToWei } from "./lib/convert";
 import AvastarToken from "./space_punks_token";
 import axios from "axios";
+import Header from "./components/Header";
+import SectionOne from "./components/section/sectionOne";
+import SectionTwo from "./components/section/sectionTwo";
+import SectionThree from "./components/section/sectionThree";
+import SectionFour from "./components/section/sectionFour";
+import SectionFive from "./components/section/sectionFive";
+import SectionSix from "./components/section/SectionSix";
+import SectionSeven from "./components/section/ SectionSeven";
+import SectionEight from "./components/section/SectionEight";
+import SectionNine from "./components/section/sectionNine";
+import Footer from "./components/Footer";
 
 function App() {
   const [inputAddress, setInputAddress] = useState("");
@@ -116,86 +127,96 @@ function App() {
     }
   };
 
-  console.log(nftImages, "nftimages");
-
-  useEffect(() => {
-    if (!window.chrome) {
-      alert("Please use a chrome browser.");
-    }
-    checkWalletIsConnected();
-    bootstrap();
-  }, []);
+  useEffect(() => {}, []);
 
   return (
-    <div>
-      <PriorityExample />
-      <div>
-        <MetaMaskCard />
+    <main>
+      <div id="contents">
+        <Header />
+        <article>
+          <SectionOne />
+          <SectionTwo />
+          <SectionThree />
+          <SectionFour />
+          <SectionFive />
+          <SectionSix />
+          <SectionSeven />
+          <SectionEight />
+          <SectionNine />
+        </article>
+        <Footer />
       </div>
-
-      <div
-        style={{
-          width: "500px",
-          border: "2px gray solid",
-          height: "500px",
-          margin: "0 auto",
-          marginTop: "30px",
-          borderRadius: "8px",
-        }}
-      >
-        <h3 style={{ textAlign: "center" }}>contract test</h3>
-        <div style={{ margin: "20px 0 0 30px" }}>
-          <input
-            type="text"
-            onChange={(e) => {
-              setCoinCount(e.target.value);
-            }}
-            value={coinCount}
-            placeholder="approve 수량"
-          />
-          <button onClick={onClickApprove}>approve</button>
-
-          <div style={{ margin: "20px 0 0 30px" }}>
-            {allowance && <div>{allowance._hex}</div>}
-          </div>
-        </div>
-
-        <div style={{ marginTop: "20px", padding: "20px" }}>
-          <hr />
-
-          <h3 style={{ textAlign: "center" }}> get nft item lists test </h3>
-          <span>test address: 0x9956923aa07796d66d5d88d185d92f8b84a17cae</span>
-          <div style={{ marginTop: "30px" }}>
-            <input
-              type="text"
-              value={inputAddress}
-              placeholder="address"
-              onChange={(e) => {
-                setInputAddress(e.target.value);
-              }}
-            />
-            <button onClick={getNftListImages}>submit</button>
-          </div>
-
-          <div style={{ marginTop: "30px" }}>
-            {loading && <span>loading......</span>}
-            {nftImages.map((image, i) => (
-              <img
-                src={image}
-                alt=""
-                key={i}
-                style={{ display: "block", width: "100px" }}
-              />
-            ))}
-          </div>
-
-          <div style={{ marginTop: "30px", fontSize: "12px" }}>
-            contract address: 0xF3E778F839934fC819cFA1040AabaCeCBA01e049
-          </div>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }
 
 export default App;
+
+// <div>
+//   <PriorityExample />
+//   <div>
+//     <MetaMaskCard />
+//   </div>
+//
+//   <div
+//       style={{
+//         width: "500px",
+//         border: "2px gray solid",
+//         height: "500px",
+//         margin: "0 auto",
+//         marginTop: "30px",
+//         borderRadius: "8px",
+//       }}
+//   >
+//     <h3 style={{ textAlign: "center" }}>contract test</h3>
+//     <div style={{ margin: "20px 0 0 30px" }}>
+//       <input
+//           type="text"
+//           onChange={(e) => {
+//             setCoinCount(e.target.value);
+//           }}
+//           value={coinCount}
+//           placeholder="approve 수량"
+//       />
+//       <button onClick={onClickApprove}>approve</button>
+//
+//       <div style={{ margin: "20px 0 0 30px" }}>
+//         {allowance && <div>{allowance._hex}</div>}
+//       </div>
+//     </div>
+//
+//     <div style={{ marginTop: "20px", padding: "20px" }}>
+//       <hr />
+//
+//       <h3 style={{ textAlign: "center" }}> get nft item lists test </h3>
+//       <span>test address: 0x9956923aa07796d66d5d88d185d92f8b84a17cae</span>
+//       <div style={{ marginTop: "30px" }}>
+//         <input
+//             type="text"
+//             value={inputAddress}
+//             placeholder="address"
+//             onChange={(e) => {
+//               setInputAddress(e.target.value);
+//             }}
+//         />
+//         <button onClick={getNftListImages}>submit</button>
+//       </div>
+//
+//       <div style={{ marginTop: "30px" }}>
+//         {loading && <span>loading......</span>}
+//         {nftImages.map((image, i) => (
+//             <img
+//                 src={image}
+//                 alt=""
+//                 key={i}
+//                 style={{ display: "block", width: "100px" }}
+//             />
+//         ))}
+//       </div>
+//
+//       <div style={{ marginTop: "30px", fontSize: "12px" }}>
+//         contract address: 0xF3E778F839934fC819cFA1040AabaCeCBA01e049
+//       </div>
+//     </div>
+//   </div>
+// </div>
